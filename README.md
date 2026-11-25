@@ -14,14 +14,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# Muse Gadgets
+# Muse Gadget — M5Stack Stack-Chan Edition
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/images/muse-gadgets-dark.png">
-    <img src=".github/images/muse-gadgets-light.png" width="900" alt="Muse gadgets: a Waveshare round AMOLED, an M5Stack StickS3, Muse Home Link, a Raspberry Pi and a Seeed reTerminal e-ink display">
-  </picture>
+  <img src=".github/images/stackchan.png" width="420" alt="M5Stack Stack-Chan running Muse Gadget">
 </p>
+
+<p align="center">
+  <strong>Open source port of the Muse Gadget SDK for the M5Stack Stack-Chan (CoreS3 Edition)</strong><br>
+  Real-time AI voice conversations, animated expressions, and dynamic head movements (Pan & Tilt via Feetech SCS0009 bus servos) with reactive base LEDs.
+</p>
+
+---
+
+## 🚀 Guia Rápido / Quick Start (Sem Compilação / No Compilation Required)
+
+Você **não precisa instalar o ESP-IDF nem compilar código** para usar o Stack-Chan com o Muse!
+
+### 1. Baixar o Firmware Pré-compilado
+Baixe o arquivo unificado `stackchan-muse-firmware-merged.bin` na aba [Releases](https://github.com/fernandofei/muse-gadget-sdk/releases).
+
+### 2. Gravar no Stack-Chan
+1. Instale o `esptool`: `pip install esptool`
+2. Coloque o CoreS3 em **modo bootloader** (segure o botão lateral RST/G0 por 2 a 3 segundos até o LED acender em verde, depois solte).
+3. Grave o arquivo único:
+```bash
+esptool.py --chip esp32s3 -p <PORTA_SERIAL> -b 460800 write_flash 0x0 stackchan-muse-firmware-merged.bin
+```
+4. Dê um clique rápido no botão de reset/power do CoreS3 (ou reconecte o cabo USB-C) para inicializar.
+
+### 3. Configurar seu SDK Token via Serial
+Obtenha seu token em [gadgets.muse.ai/settings/sdk-tokens](https://gadgets.muse.ai/settings/sdk-tokens) e envie diretamente pela porta serial (115200 baud):
+```bash
+python3 -c "import serial, time; s = serial.Serial('<PORTA_SERIAL>', 115200, timeout=1); time.sleep(1); s.write(b'>sdk_token=mgst_SEU_TOKEN_AQUI\n'); s.flush(); time.sleep(1); print(s.read_all().decode()); s.close()"
+```
+O Stack-Chan responderá `@sdk_token ok`, salvará o token na partição NVS e reiniciará pronto para o pareamento!
+
+### 4. Parear no Celular
+Abra o app do **Muse** no seu smartphone (com *Developer mode* e *Allow community devices* ativados em Settings > Devices) e conecte com o dispositivo `MuseGadget-XXXXXX`.
+
+> 📖 **Documentação Completa:** Consulte [esp32/devices/m5stack-stackchan.md](esp32/devices/m5stack-stackchan.md) para detalhes do esquemático, pinagem dos servos e como compilar do código-fonte.
+
+---
 
 Muse gadgets are open source devices you build yourself. Program an
 off-the-shelf ESP32 board or set up a Raspberry Pi with our device SDKs, then
